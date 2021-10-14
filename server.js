@@ -1,6 +1,6 @@
 const express = require('express');
-const friendController = require('./controllers/friends-controller');
-const messagesController = require('./controllers/messages-controller');
+const friendsRouter = require('./routes/friends.routes');
+const messagesRouter = require('./routes/messages.routes');
 
 const app = express();
 const PORT = 3001;
@@ -11,7 +11,7 @@ app.use((req, res, next) => {
   next();
   // actions go here...
   const delta = Date.now() - start;
-  console.log(`${req.method} ${req.url} ${delta}ms`);
+  console.log(`${req.method} ${req.baseUrl}${req.url} ${delta}ms`);
 })
 
 // Second middleware
@@ -24,11 +24,8 @@ app.get('/', (req, res) => {
   });
 });
 
-app.get('/friends', friendController.getFriends);
-app.get('/friends/:friendId', friendController.getFriend);
-app.post('/friends', friendController.postFriend);
-
-app.get('/messages', messagesController.getMessage);
+app.use('/friends', friendsRouter);
+app.use('/messages', messagesRouter);
 
 app.listen(PORT, () => {
   console.log(`Listening on ${PORT}...`)
