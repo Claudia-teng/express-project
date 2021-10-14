@@ -8,15 +8,16 @@ const friends = [
     name: 'Isaac'
   },
   {
-    id: 2,
+    id: 1,
     name: 'Albert'
   },
   {
-    id: 3,
+    id: 2,
     name: 'Alex'
   }
 ]
 
+// First middleware
 app.use((req, res, next) => {
   const start = Date.now();
   next();
@@ -24,6 +25,9 @@ app.use((req, res, next) => {
   const delta = Date.now() - start;
   console.log(`${req.method} ${req.url} ${delta}ms`);
 })
+
+// Second middleware
+app.use(express.json());
 
 app.get('/', (req, res) => {
   res.send({
@@ -47,6 +51,22 @@ app.get('/friends/:friendId', (req, res) => {
     });
   }
 });
+
+app.post('/friends', (req, res) => {
+  if (!req.body.name) {
+    return res.status(400).json({
+      error: 'Missing friend\'s name'
+    })
+  }
+
+  const newFriend = {
+    name: req.body.name,
+    id: friends.length
+  }
+  friends.push(newFriend);
+
+  res.json(newFriend);
+})
 
 app.get('/messages', (req, res) => {
   res.send('<ul><li>Hello Albert</li></ul>');
